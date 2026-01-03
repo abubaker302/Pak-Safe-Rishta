@@ -1,0 +1,7 @@
+{
+  "name": "Pak-Safe Rishta",
+  "description": "A secure, family-oriented matchmaking platform for Pakistan with mandatory NADRA verification and Guardian controls.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
