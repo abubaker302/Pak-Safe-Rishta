@@ -1,6 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
-import { Screen, Profile } from './types';
+import React, { useState } from 'react';
+import { Screen, Profile, Language } from './types';
 import Welcome from './screens/Welcome';
 import Verification from './screens/Verification';
 import HomeFeed from './screens/HomeFeed';
@@ -58,7 +58,7 @@ const MOCK_PROFILES: Profile[] = [
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('WELCOME');
   const [selectedProfile, setSelectedProfile] = useState<Profile | null>(null);
-  const [isVerified, setIsVerified] = useState(false);
+  const [lang, setLang] = useState<Language>('ur'); // Default to Urdu for initial brief focus
 
   const navigateTo = (screen: Screen, profile?: Profile) => {
     if (profile) setSelectedProfile(profile);
@@ -66,31 +66,38 @@ const App: React.FC = () => {
     window.scrollTo(0, 0);
   };
 
+  const toggleLanguage = () => {
+    setLang(prev => prev === 'en' ? 'ur' : 'en');
+  };
+
   const renderScreen = () => {
     switch (currentScreen) {
       case 'WELCOME':
-        return <Welcome onStart={() => navigateTo('VERIFICATION')} />;
+        return <Welcome onStart={() => navigateTo('VERIFICATION')} lang={lang} onToggleLang={toggleLanguage} />;
       case 'VERIFICATION':
-        return <Verification onComplete={() => { setIsVerified(true); navigateTo('HOME'); }} />;
+        return <Verification onComplete={() => navigateTo('HOME')} lang={lang} />;
       case 'HOME':
-        return <HomeFeed profiles={MOCK_PROFILES} onSelectProfile={(p) => navigateTo('PROFILE', p)} />;
+        return <HomeFeed profiles={MOCK_PROFILES} onSelectProfile={(p) => navigateTo('PROFILE', p)} lang={lang} />;
       case 'PROFILE':
-        return selectedProfile ? <ProfileDetail profile={selectedProfile} onBack={() => navigateTo('HOME')} onChat={() => navigateTo('CHAT')} /> : null;
+        return selectedProfile ? <ProfileDetail profile={selectedProfile} onBack={() => navigateTo('HOME')} onChat={() => navigateTo('CHAT')} lang={lang} /> : null;
       case 'GUARDIAN':
-        return <GuardianDashboard />;
+        return <GuardianDashboard lang={lang} />;
       case 'CHAT':
-        return <Chat onBack={() => navigateTo('HOME')} />;
+        return <Chat onBack={() => navigateTo('HOME')} lang={lang} />;
       case 'PRICING':
-        return <Pricing onBack={() => navigateTo('HOME')} />;
+        return <Pricing onBack={() => navigateTo('HOME')} lang={lang} />;
       default:
-        return <Welcome onStart={() => navigateTo('VERIFICATION')} />;
+        return <Welcome onStart={() => navigateTo('VERIFICATION')} lang={lang} onToggleLang={toggleLanguage} />;
     }
   };
 
   const showNav = !['WELCOME', 'VERIFICATION'].includes(currentScreen);
 
   return (
-    <div className="max-w-md mx-auto min-h-screen bg-white shadow-xl relative overflow-x-hidden flex flex-col">
+    <div 
+      dir={lang === 'ur' ? 'rtl' : 'ltr'} 
+      className="max-w-md mx-auto min-h-screen bg-white shadow-xl relative overflow-x-hidden flex flex-col transition-all duration-300"
+    >
       <main className="flex-grow pb-20">
         {renderScreen()}
       </main>
@@ -99,6 +106,7 @@ const App: React.FC = () => {
         <BottomNav 
           currentScreen={currentScreen} 
           onNavigate={navigateTo} 
+          lang={lang}
         />
       )}
     </div>

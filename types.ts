@@ -1,5 +1,6 @@
 
 export type Screen = 'WELCOME' | 'VERIFICATION' | 'HOME' | 'PROFILE' | 'GUARDIAN' | 'CHAT' | 'PRICING';
+export type Language = 'en' | 'ur';
 
 export interface Profile {
   id: string;
